@@ -13,9 +13,19 @@ var touchsupport = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) 
 
 var formelements = 'button, datalist, fieldset, input, label, legend, meter, optgroup, option, output, progress, select, textarea';
 
+// rapidoc: #280 disable broad document syntax highlightning
+window.Prism = window.Prism || {};
+Prism.manual = true;
+
+// PerfectScrollbar
+var psc;
+var psm;
+var pst;
+
 function switchTab(tabGroup, tabId) {
-    allTabItems = jQuery("[data-tab-group='"+tabGroup+"']");
-    targetTabItems = jQuery("[data-tab-group='"+tabGroup+"'][data-tab-item='"+tabId+"']");
+    var tabs = jQuery(".tab-panel").has("[data-tab-group='"+tabGroup+"'][data-tab-item='"+tabId+"']");
+    var allTabItems = tabs.find("[data-tab-group='"+tabGroup+"']");
+    var targetTabItems = tabs.find("[data-tab-group='"+tabGroup+"'][data-tab-item='"+tabId+"']");
 
     // if event is undefined then switchTab was called from restoreTabSelection
     // so it's not a button event and we don't need to safe the selction or
@@ -301,7 +311,10 @@ function initMenuScrollbar(){
         return;
     }
 
-    var content = '#body-inner';
+    var elc = document.querySelector('#body-inner');
+    var elm = document.querySelector('#content-wrapper');
+    var elt = document.querySelector('#TableOfContents');
+
     var autofocus = false;
     document.addEventListener('keydown', function(event){
         // for initial keyboard scrolling support, no element
@@ -311,42 +324,52 @@ function initMenuScrollbar(){
         // it and give focus to the scrollbar - only
         // to just remove the focus right after scrolling
         // happend
-        var p = document.querySelector(content).matches(':hover');
-        var m = document.querySelector('#content-wrapper').matches(':hover');
+        var c = elc && elc.matches(':hover');
+        var m = elm && elm.matches(':hover');
+        var t = elt && elt.matches(':hover');
         var f = event.target.matches( formelements );
-        if( !p && !m && !f ){
+        if( !c && !m && !t && !f ){
             // only do this hack if none of our scrollbars
             // is hovered
             autofocus = true;
             // if we are showing the sidebar as a flyout we
             // want to scroll the content-wrapper, otherwise we want
             // to scroll the body
-            var n = document.querySelector('body').matches('.sidebar-flyout');
-            if( n ){
-                psm.scrollbarY.focus();
+            var nt = document.querySelector('body').matches('.toc-flyout');
+            var nm = document.querySelector('body').matches('.sidebar-flyout');
+            if( nt ){
+                pst && pst.scrollbarY.focus();
+            }
+            else if( nm ){
+                psm && psm.scrollbarY.focus();
             }
             else{
-                psc.scrollbarY.focus();
+                document.querySelector('#body-inner').focus();
+                psc && psc.scrollbarY.focus();
             }
         }
     });
     // scrollbars will install their own keyboard handlers
     // that need to be executed inbetween our own handlers
-    var psm = new PerfectScrollbar('#content-wrapper');
-    var psc = new PerfectScrollbar(content);
+    // PSC removed for #242 #243 #244
+    // psc = elc && new PerfectScrollbar('#body-inner');
+    psm = elm && new PerfectScrollbar('#content-wrapper');
+    pst = elt && new PerfectScrollbar('#TableOfContents');
     document.addEventListener('keydown', function(){
         // if we facked initial scrolling, we want to
         // remove the focus to not leave visual markers on
         // the scrollbar
         if( autofocus ){
-            psc.scrollbarY.blur();
-            psm.scrollbarY.blur();
+            psc && psc.scrollbarY.blur();
+            psm && psm.scrollbarY.blur();
+            pst && pst.scrollbarY.blur();
             autofocus = false;
         }
     });
     // on resize, we have to redraw the scrollbars to let new height
     // affect their size
     window.addEventListener('resize', function(){
+        pst && pst.update();
         psm && psm.update();
         psc && psc.update();
     });
@@ -414,19 +437,119 @@ function initImageStyles(){
     });
 }
 
+function sidebarEscapeHandler( event ){
+    if( event.key == "Escape" ){
+        var b = document.querySelector( 'body' );
+        b.classList.remove( 'sidebar-flyout' );
+        document.removeEventListener( 'keydown', sidebarEscapeHandler );
+        document.querySelector( '#body-inner' ).focus();
+        psc && psc.scrollbarY.focus();
+    }
+}
+
+function tocEscapeHandler( event ){
+    if( event.key == "Escape" ){
+        var b = document.querySelector( 'body' );
+        b.classList.remove( 'toc-flyout' );
+        document.removeEventListener( 'keydown', tocEscapeHandler );
+        document.querySelector( '#body-inner' ).focus();
+        psc && psc.scrollbarY.focus();
+    }
+}
+
+function sidebarShortcutHandler( event ){
+    if( event.altKey && event.ctrlKey && event.which == 77 /* m */ ){
+        showNav();
+    }
+}
+
+function tocShortcutHandler( event ){
+    if( event.altKey && event.ctrlKey && event.which == 84 /* t */ ){
+        showToc();
+    }
+}
+
+function editShortcutHandler( event ){
+    if( event.altKey && event.ctrlKey && event.which == 69 /* e */ ){
+        showEdit();
+    }
+}
+
+function printShortcutHandler( event ){
+    if( event.altKey && event.ctrlKey && event.which == 80 /* p */ ){
+        showPrint();
+    }
+}
+
+function showNav(){
+    if( !document.querySelector( '#sidebar-overlay' ) ){
+        // we may not have a flyout
+        return;
+    }
+    var b = document.querySelector( 'body' );
+    b.classList.toggle( 'sidebar-flyout' );
+    if( b.classList.contains( 'sidebar-flyout' ) ){
+        b.classList.remove( 'toc-flyout' );
+        document.removeEventListener( 'keydown', tocEscapeHandler );
+        document.addEventListener( 'keydown', sidebarEscapeHandler );
+    }
+    else{
+        document.removeEventListener( 'keydown', sidebarEscapeHandler );
+        document.querySelector( '#body-inner' ).focus();
+        psc && psc.scrollbarY.focus();
+    }
+}
+
+function showToc(){
+    var t = document.querySelector( '#toc-menu' );
+    if( !t ){
+        // we may not have a toc
+        return;
+    }
+    var b = document.querySelector( 'body' );
+    b.classList.toggle( 'toc-flyout' );
+    if( b.classList.contains( 'toc-flyout' ) ){
+        pst && pst.update();
+        document.addEventListener( 'keydown', tocEscapeHandler );
+    }
+    else{
+        document.removeEventListener( 'keydown', tocEscapeHandler );
+        document.querySelector( '#body-inner' ).focus();
+        psc && psc.scrollbarY.focus();
+    }
+}
+
+function showEdit(){
+    var l = document.querySelector( '#top-github-link a' );
+    if( l ){
+        l.click();
+    }
+}
+
+function showPrint(){
+    var l = document.querySelector( '#top-print-link a' );
+    if( l ){
+        l.click();
+    }
+}
+
 function initToc(){
-    function showNav(){
-        var b = document.querySelector( 'body' );
-        b.classList.toggle( 'sidebar-flyout' );
-        var n = b.matches('.sidebar-flyout');
-        if( n ){
-            b.classList.remove( 'toc-flyout' );
+    if( isPrint ){
+        return;
+    }
+
+    document.addEventListener( 'keydown', editShortcutHandler );
+    document.addEventListener( 'keydown', printShortcutHandler );
+    document.addEventListener( 'keydown', sidebarShortcutHandler );
+    document.addEventListener( 'keydown', tocShortcutHandler );
+    // avoid keyboard navigation for input fields
+    jQuery(formelements).keydown(function (e) {
+        if( e.altKey && event.ctrlKey ){
+            if( e.which == 77 /* m */ || e.which == 84 /* t */ || e.which == 69 /* e */ || e.which == 80 /* p */ ){
+                e.stopPropagation();
+            }
         }
-    }
-    function showToc(){
-        var b = document.querySelector( 'body' );
-        b.classList.toggle( 'toc-flyout' );
-    }
+    });
 
     document.querySelector( '#sidebar-overlay' ).addEventListener( 'click', showNav );
     document.querySelector( '#sidebar-toggle' ).addEventListener( 'click', showNav );
@@ -438,6 +561,10 @@ function initToc(){
         t.addEventListener( 'click', showToc );
         p.addEventListener( 'click', showToc );
     }
+
+    // finally give initial focus to allow keyboard scrolling in FF
+    document.querySelector( '#body-inner' ).focus();
+    psc && psc.scrollbarY.focus();
 }
 
 function initSwipeHandler(){
@@ -464,7 +591,11 @@ function initSwipeHandler(){
             else if( diffx > 30 ){
                 startx = null;
                 starty = null;
-                document.querySelector( 'body' ).classList.toggle( 'sidebar-flyout' );
+                var b = document.querySelector( 'body' );
+                b.classList.remove( 'sidebar-flyout' );
+                document.removeEventListener( 'keydown', sidebarEscapeHandler );
+                document.querySelector( '#body-inner' ).focus();
+                psc && psc.scrollbarY.focus();
             }
         }
         return false;
