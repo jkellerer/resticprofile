@@ -3,46 +3,6 @@
 @import "tags.css";
 @import "tabs.css";
 
-@font-face {
-    font-family: 'Work Sans';
-    font-style: normal;
-    font-weight: 200;
-    src: url("../fonts/WorkSans-ExtraLight.woff") format("woff2"), url("../fonts/WorkSans-ExtraLight.woff") format("woff");
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Work Sans';
-    font-style: normal;
-    font-weight: 300;
-    src: url("../fonts/WorkSans-Light.woff2") format("woff2"), url("../fonts/WorkSans-Light.woff") format("woff");
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Work Sans';
-    font-style: normal;
-    font-weight: 400;
-    src: url("../fonts/WorkSans-Regular.woff2") format("woff2"), url("../fonts/WorkSans-Regular.woff") format("woff");
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Work Sans';
-    font-style: normal;
-    font-weight: 500;
-    src: url("../fonts/WorkSans-Medium.woff2") format("woff2"), url("../fonts/WorkSans-Medium.woff") format("woff");
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Work Sans';
-    font-style: normal;
-    font-weight: 600;
-    src: url("../fonts/WorkSans-Bold.woff2") format("woff2"), url("../fonts/WorkSans-Bold.woff") format("woff");
-    font-display: swap;
-}
-
 html {
     width: 100%;
     height: 100%;
@@ -60,17 +20,17 @@ body {
     width: 100%;
 }
 
-body #body-inner .chapter h1 {
+body:not(.print) #body-inner.narrow h1 {
     font-size: 3.5rem;
 }
 @media only screen and (min-width: 48em) and (max-width: 59.938em) {
-    body #body-inner .chapter h1 {
+    body:not(.print) #body-inner.narrow h1 {
         font-size: 2.8rem;
     }
 }
 @media only screen and (max-width: 47.938em) {
-    body #body-inner .chapter h1 {
-        font-size: 2rem;
+    body:not(.print) #body-inner.narrow h1 {
+        font-size: 2.5rem;
     }
 }
 
@@ -104,7 +64,7 @@ th {
     max-width: 300px;
     position: fixed;
     width: 300px;
-    z-index: 310;
+    z-index: 80;
 }
 
 #header-wrapper {
@@ -126,11 +86,11 @@ th {
     margin-top: 1rem;
 }
 
-.searchbox label {
+.searchbox > i {
     color: rgba( 255, 255, 255, .8 );
     position: absolute;
     left: 10px;
-    top: 3px;
+    top: 6px;
 }
 
 .searchbox span {
@@ -170,19 +130,15 @@ th {
     flex: 1; /* fill rest of vertical space */
     overflow: hidden;
     position: relative; /* PS */
-    z-index: 410;
+    z-index: 100;
 }
 
-#sidebar a.padding {
+#sidebar .padding {
     padding: 0 1rem;
 }
 
 #sidebar ul.topics {
     margin: 0 1rem;
-}
-
-#sidebar ul.topics.searched ul {
-    display: block;
 }
 
 #sidebar ul.topics ul {
@@ -207,12 +163,7 @@ th {
     display: block;
 }
 
-#sidebar ul.topics input.toggle,
-#sidebar ul.topics label {
-    display: none;
-}
-
-#sidebar ul.topics > li > label,
+#sidebar ul.collapsible-menu > li > .toggle,
 #sidebar ul.topics > li > a {
     font-size: 1.1rem;
     line-height: 2rem;
@@ -332,14 +283,23 @@ th {
     overflow-wrap: break-word; /* avoid x-scrolling of body if it is to large to fit */
     position: relative; /* PS */
     width: calc( 100% - 300px);
-    z-index: 300;
+    z-index: 70;
 }
 
 #body img,
+#body img.center,
 #body .video-container {
     display: block;
     margin: 1.5rem auto;
     text-align: center;
+}
+
+#body img.left {
+    margin-left: 0;
+}
+
+#body img.right {
+    margin-right: 0;
 }
 
 #body img.border,
@@ -364,7 +324,7 @@ th {
     flex: auto;
     flex-direction: column;
     overflow-y: auto;
-    padding: 0 3rem 4rem 3rem;
+    padding: 0 3.25rem 4rem 3.25rem;
     position: relative; /* PS */
 }
 @media screen and (max-width: 59.938em) {
@@ -374,7 +334,7 @@ th {
 }
 @media screen and (max-width: 47.938em) {
     #body-inner {
-        padding: 0 1rem 5px 1rem;
+        padding: 0 1.25rem 5px 1.25rem;
     }
 }
 
@@ -393,38 +353,43 @@ th {
     #body .flex-block-wrapper {
         margin-left: auto;
         margin-right: auto;
-        max-width: 1000px;
+        min-width: calc( 1300px - 300px - 2 * 3.25rem );
+        width: calc( 1300px - 300px - 2 * 3.25rem );
+        max-width: calc( 1300px - 300px - 2 * 3.25rem );
+    }
+    body:not(.print) #body .narrow .flex-block-wrapper {
+        min-width: calc( 1300px - 300px - 2 * 9.75rem );
+        width: calc( 1300px - 300px - 2 * 9.75rem );
+        max-width: calc( 1300px - 300px - 2 * 9.75rem );
     }
 }
 
-#body-inner.chapter {
-    margin-left: auto;
-    margin-right: auto;
-    padding: 2rem 9rem;
+body:not(.print) #body-inner.narrow {
+    padding: 2rem 9.75rem;
 }
 @media screen and (max-width: 59.938em) {
-    #body-inner.chapter {
-        padding: 15px 4rem 15px 4rem;
+    body:not(.print) #body-inner.narrow {
+        padding: 15px 6.5rem;
     }
 }
 @media screen and (max-width: 47.938em) {
-    #body-inner.chapter {
-        padding: 5px 2rem 5px 2rem;
+    body:not(.print) #body-inner.narrow {
+        padding: 5px 3.25rem;
     }
 }
 
-#body-inner .chapter h3:first-of-type {
+#body-inner div.article-subheading,
+#body-inner .chapter.deprecated h3:first-of-type {
     font-weight: 200;
     margin-top: 0;
     text-align: center;
 }
 
-#body-inner .chapter h1 {
+body:not(.print) #body-inner.narrow h1 {
     border-bottom: 4px solid rgba( 134, 134, 134, .125 );
-    font-size: 5rem;
 }
 
-#body-inner .chapter p {
+body:not(.print) #body-inner.narrow p {
     font-size: 1.2rem;
     text-align: justify;
 }
@@ -435,7 +400,7 @@ h1 {
     text-transform: uppercase;
 }
 
-h2, h3, h4, h5, h6 {
+h2, h3, .article-subheading, h4, h5, h6 {
     letter-spacing: -1px;
     text-rendering: optimizeLegibility;
 }
@@ -606,7 +571,8 @@ hr {
 #body-inner h3,
 #body-inner h4,
 #body-inner h5,
-#body-inner h6 {
+#body-inner h6,
+#body-inner .article-subheading {
     /* big titles cause a horizontal scrollbar - fixing this by wrapping text */
     overflow-wrap: break-word;
     overflow-x: hidden;
@@ -656,7 +622,7 @@ td {
     text-transform: none;
     white-space: pre;
     word-wrap: break-word;
-    z-index: 450;
+    z-index: 140;
 }
 
 .tooltipped:before {
@@ -668,7 +634,7 @@ td {
     pointer-events: none;
     position: absolute;
     width: 0;
-    z-index: 460;
+    z-index: 150;
 }
 
 .tooltipped:hover:before,
@@ -788,7 +754,7 @@ td {
 #topbar {
     min-height: 3rem;
     position: relative;
-    z-index: 480;
+    z-index: 170;
 }
 
 #topbar > div {
@@ -931,7 +897,7 @@ span.nav i{
     }
     .mobile-support.sidebar-flyout #sidebar {
         left: 0;
-        z-index: 400;
+        z-index: 90;
     }
     .mobile-support.sidebar-flyout #body {
         margin-left: 230px;
@@ -945,7 +911,7 @@ span.nav i{
         position: absolute;
         right: 0;
         top: 0;
-        z-index: 500;
+        z-index: 190;
     }
 }
 
@@ -980,6 +946,16 @@ pre .copy-to-clipboard-button {
     top: 4px;
 }
 
+.disableInlineCopyToClipboard :not(pre) > code.copy-to-clipboard-code + span.copy-to-clipboard-button {
+    display: none;
+}
+
+.disableInlineCopyToClipboard :not(pre) > code.copy-to-clipboard-code {
+    border-bottom-right-radius: 2px;
+    border-top-right-radius: 2px;
+    border-right-width: 1px;
+}
+
 #homelinks {
     border-bottom-style: solid;
     border-bottom-width: 4px;
@@ -1002,6 +978,10 @@ option {
 .expand-label > .fas {
     font-size: .8rem;
     width: .6rem;
+}
+
+.expand-content {
+    margin-top: .5rem;
 }
 
 /* expander collapsed, default */
@@ -1131,7 +1111,7 @@ option {
     position: absolute;
     right: 0;
     top: 0;
-    z-index: 470;
+    z-index: 160;
 }
 
 .progress {
@@ -1142,7 +1122,7 @@ option {
     overflow: hidden;
     position: absolute;
     width: 0;
-    z-index: 490;
+    z-index: 180;
 }
 
 .toc-flyout .progress {
@@ -1256,7 +1236,7 @@ h6 a {
     margin-top: 2rem;
 }
 
-#body h3 {
+#body h3, #body .article-subheading {
     font-size: 1.8rem;
     font-weight: 500;
     margin-top: 2rem;
@@ -1299,9 +1279,40 @@ h6 a {
 }
 
 rapi-doc {
-    /* adjust rapi-doc internals to fill out available space */
+    /* adjust rapi-doc internals to fill out available space with render-style=view */
     margin-left: calc( -8px - 24px );
     width: calc( 100% + 8px + 24px + 8px );
+}
+@media (max-width: 767px) {
+    rapi-doc {
+        margin-left: calc( -12px );
+        width: calc( 100% + 12px + 4px );
+    }
+}
+
+rapi-doc::part(section-main-content) {
+    /* override variables for adapting rapidoc design to theme */
+    --font-mono: var(--INTERNAL-CODE-font);
+    --font-size-mono: 15px;
+    --font-regular: var(--INTERNAL-MAIN-font);
+    --font-size-regular: 16.25px;
+    font-weight: 300 !important;
+}
+
+rapi-doc::part(section-overview-title) {
+    color: var(--INTERNAL-MAIN-TITLES-H2-color);
+    font-size: 2.55rem;
+    font-weight: 500;
+}
+
+rapi-doc::part(btn) {
+    /* makes download button large enough to not overflow default text */
+    width: unset !important;
+}
+
+rapi-doc::part(section-endpoint-head-method) {
+    /* makes method marker large enough to not overflow on text DELETE */
+    font-size: 11px;
 }
 
 .select-container i {
@@ -1367,6 +1378,10 @@ rapi-doc {
     display: initial;
 }
 
+.footerVisitedLinks a {
+	cursor: pointer;
+}
+
 @media screen and (max-width: 47.938em) {
     #breadcrumbs .links {
         display: none;
@@ -1380,37 +1395,115 @@ input[type="search"]::-webkit-search-results-button,
 input[type="search"]::-webkit-search-results-decoration { display: none; }
 
 #sidebar ul.collapsible-menu input.toggle {
-	cursor: pointer;
-    display: block;
-	left: -1rem;
-	opacity: 0;
-    overflow: hidden;
-	position: absolute;
-	top: 0;
-}
-
-#sidebar ul.collapsible-menu label {
+    -webkit-appearance: none;
+    appearance: none;
     cursor: pointer;
-    display: inline;
-    height: 1rem;
-    left: 0;
-    margin-top: .25em;
-	position: absolute;
-    width: 1rem;
+    height: 2rem;
+    left: 1rem;
+    padding-top: .35rem;
+    position: absolute;
+    width: 1px;
 }
 
-#sidebar .collapsible-menu input.toggle + label:after {
-    content: "▸";
+#sidebar ul.collapsible-menu > li > input.toggle {
+    padding-top: .25rem;
 }
 
-#sidebar .collapsible-menu input.toggle:checked + label:after {
-    content: "▾";
+#sidebar .collapsible-menu input.toggle:before {
+    content: "\f054";
+    font-family: "Font Awesome 5 Free";
+    font-size: .8rem;
+    font-weight: 900;
+    margin-left: -1rem;
+    padding-bottom: .65rem;
+    padding-left: .2rem;
+    padding-right: .2rem;
+    padding-top: .6rem;
 }
 
-#sidebar .collapsible-menu input.toggle + label + a + ul {
+#sidebar .collapsible-menu input.toggle:checked:before {
+    content: "\f078";
+    padding-left: .1rem;
+    padding-right: .1rem;
+}
+
+#sidebar .collapsible-menu input.toggle + label.toggle + a + ul {
     display: none;
 }
 
-#sidebar .collapsible-menu input.toggle:checked + label + a + ul {
+#sidebar .collapsible-menu input.toggle:checked + label.toggle + a + ul {
 	display: inline;
+}
+
+.math.align-center > mjx-container{
+    text-align: center !important;
+}
+
+.math.align-left > mjx-container{
+    text-align: left !important;
+}
+
+.math.align-right > mjx-container{
+    text-align: right !important;
+}
+
+.scrollbar-measure {
+    /* https://davidwalsh.name/detect-scrollbar-width */
+	height: 100px;
+	overflow: scroll;
+	position: absolute;
+	width: 100px;
+	top: -9999px;
+}
+
+.a11y-only {
+    /* idea taken from https://www.filamentgroup.com/lab/a11y-form-labels.html */
+    clip: rect(1px,1px,1px,1px);
+    overflow: hidden;
+    position: absolute;
+    height: 1px;
+    transform: translateY(-100%);
+    transition: transform .5s cubic-bezier(.18,.89,.32,1.28);
+    white-space: nowrap;
+    width: 1px;
+}
+
+/* filament style for making action visible on focus - not adepted yet
+.a11y-only:focus {
+    position: fixed;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+    margin: 0 0 0 -100px;
+    top: -.3em;
+    left: 50%;
+    text-align: center;
+    width: 200px;
+    background: #fff;
+    color: #368512;
+    padding: .8em 0 .7em;
+    font-size: 16px;
+    z-index: 5000;
+    text-decoration: none;
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    outline: 0;
+    transform: translateY(0%);
+}
+*/
+
+.align-right {
+    display: flex;
+    justify-content: right;
+}
+
+.align-center {
+    display: flex;
+    justify-content: center;
+}
+
+.align-left {
+    display: flex;
+    justify-content: left;
 }
